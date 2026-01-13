@@ -1,0 +1,46 @@
+# .NET
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+publish/
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Test results
+TestResults/
+coverage*.xml
+coverage*.json
+
+# User secrets
+secrets.json
+
+# macOS
+.DS_Store
+
+# Claude
+.claude/
+
+# Environment files
+.env
+.env.local
+appsettings.Development.json
+appsettings.Local.json
