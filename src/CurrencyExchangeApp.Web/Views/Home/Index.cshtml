@@ -1,0 +1,70 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center py-5">
+    <h1 class="display-4 mb-4">Currency Exchange Rate Dashboard</h1>
+    <p class="lead mb-4">
+        Track real-time exchange rates for major world currencies against the Nigerian Naira (NGN).
+    </p>
+    <p class="text-muted mb-5">
+        Get live rates for USD, EUR, GBP, JPY, CAD, AUD, CHF and more.
+    </p>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body py-5">
+                    <h5 class="card-title mb-4">Get Started</h5>
+                    <p class="card-text mb-4">
+                        Sign in or create an account to view real-time exchange rates.
+                    </p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg px-4">
+                            Login
+                        </a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg px-4">
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="display-6 text-primary mb-3">📊</div>
+                <h5 class="card-title">Real-Time Rates</h5>
+                <p class="card-text text-muted">
+                    Get up-to-date exchange rates from reliable sources.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="display-6 text-primary mb-3">🔒</div>
+                <h5 class="card-title">Secure Access</h5>
+                <p class="card-text text-muted">
+                    Your data is protected with industry-standard security.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="display-6 text-primary mb-3">🌍</div>
+                <h5 class="card-title">Major Currencies</h5>
+                <p class="card-text text-muted">
+                    Track NGN, USD, EUR, GBP, JPY, CAD, AUD, and CHF.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

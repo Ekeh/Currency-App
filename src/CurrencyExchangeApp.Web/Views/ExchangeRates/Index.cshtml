@@ -1,0 +1,101 @@
+@model CurrencyExchangeApp.Web.Models.ViewModels.ExchangeRatesViewModel
+@{
+    ViewData["Title"] = "Exchange Rates";
+}
+
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0">Exchange Rates</h1>
+        <div class="d-flex align-items-center gap-2">
+            <label for="baseCurrency" class="form-label mb-0 me-2">Base Currency:</label>
+            <select id="baseCurrency" class="form-select" style="width: auto;" onchange="changeBaseCurrency(this.value)">
+                @foreach (var currency in Model.AvailableCurrencies)
+                {
+                    <option value="@currency.Code" selected="@(currency.Code == Model.BaseCurrency)">
+                        @currency.Code - @currency.Name
+                    </option>
+                }
+            </select>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-warning" role="alert">
+            <strong>Note:</strong> @Model.ErrorMessage
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>
+                    <strong>Base:</strong> 1 @Model.BaseCurrency = Exchange Rates
+                </span>
+                <small>
+                    Last Updated: @Model.LastUpdated.ToString("MMM dd, yyyy HH:mm:ss") UTC
+                </small>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Rates.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Currency Code</th>
+                                <th scope="col">Currency Name</th>
+                                <th scope="col" class="text-end">Exchange Rate</th>
+                                <th scope="col" class="text-end">Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var rate in Model.Rates)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">@rate.CurrencyCode</span>
+                                    </td>
+                                    <td>@rate.CurrencyName</td>
+                                    <td class="text-end">
+                                        <strong>@rate.Rate.ToString("N6")</strong>
+                                    </td>
+                                    <td class="text-end text-muted">
+                                        @rate.LastUpdated.ToString("HH:mm:ss")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <p class="text-muted mb-0">No exchange rates available at this time.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6 class="card-title">How to Read This Table</h6>
+                <p class="card-text small text-muted mb-0">
+                    The exchange rate shows how much of each currency equals 1 @Model.BaseCurrency.
+                    For example, if USD shows 0.000625, that means 1 NGN = 0.000625 USD (or 1 USD = 1,600 NGN).
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function changeBaseCurrency(currency) {
+            window.location.href = '@Url.Action("Index", "ExchangeRates")?baseCurrency=' + currency;
+        }
+    </script>
+}
