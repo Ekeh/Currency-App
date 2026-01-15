@@ -64,6 +64,21 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Infrastructure: Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status503ServiceUnavailable;
+    options.AddFixedWindowLimiter("fixed", limiterOptions =>
+    {
+        var rateLimitSettings = builder.Configuration.GetSection("RateLimiting");
+        limiterOptions.PermitLimit = rateLimitSettings.GetValue<int>("PermitLimit", 100)    ?? 100;
+        limiterOptions.Window = TimeSpan.FromSeconds(rateLimitSettings.GetValue<int>("WindowSeconds", 60) ?? 60);
+        limiterOptions.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+        limiterOptions.QueueLimit = rateLimitSettings.GetValue<int>("QueueLimit", 2) ?? 2;
+    });
+});
+
+
 // Infrastructure: Repositories & Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -142,6 +157,8 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
