@@ -19,17 +19,20 @@ public class AuthController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IValidator<RegisterRequest> _registerValidator;
+    private readonly IValidator<LoginRequest> _loginValidator;
     private readonly IConfiguration _configuration;
 
     public AuthController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IValidator<RegisterRequest> registerValidator,
+        IValidator<LoginRequest> loginValidator,
         IConfiguration configuration)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _registerValidator = registerValidator;
+        _loginValidator = loginValidator;
         _configuration = configuration;
     }
 
@@ -39,10 +42,14 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
-            return BadRequest(new { Error = "Email and password are required" });
+        var validationResult = await _loginValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new { Errors = validationResult.Errors.Select(e => e.ErrorMessage) });
+        }
 
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user == null)
