@@ -64,7 +64,10 @@ public class AuthController : ControllerBase
         {
             Token = token,
             Expiration = DateTime.UtcNow.AddHours(24),
-            Email = user.Email!
+            Email = user.Email!,
+            UserId = user.Id,
+            FirstName = user.FirstName ?? string.Empty,
+            LastName = user.LastName ?? string.Empty
         });
     }
 
@@ -99,7 +102,10 @@ public class AuthController : ControllerBase
         {
             Token = token,
             Expiration = DateTime.UtcNow.AddHours(24),
-            Email = user.Email
+            Email = user.Email,
+            UserId = user.Id,
+            FirstName = user.FirstName ?? string.Empty,
+            LastName = user.LastName ?? string.Empty
         });
     }
 
