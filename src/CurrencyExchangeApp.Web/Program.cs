@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 using System.Reflection;
 using FluentValidation;
 using CurrencyExchangeApp.Application.Services;
@@ -71,10 +73,10 @@ builder.Services.AddRateLimiter(options =>
     options.AddFixedWindowLimiter("fixed", limiterOptions =>
     {
         var rateLimitSettings = builder.Configuration.GetSection("RateLimiting");
-        limiterOptions.PermitLimit = rateLimitSettings.GetValue<int>("PermitLimit", 100)    ?? 100;
-        limiterOptions.Window = TimeSpan.FromSeconds(rateLimitSettings.GetValue<int>("WindowSeconds", 60) ?? 60);
+        limiterOptions.PermitLimit = rateLimitSettings.GetValue<int>("PermitLimit", 100);
+        limiterOptions.Window = TimeSpan.FromSeconds(rateLimitSettings.GetValue<int>("WindowSeconds", 60));
         limiterOptions.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
-        limiterOptions.QueueLimit = rateLimitSettings.GetValue<int>("QueueLimit", 2) ?? 2;
+        limiterOptions.QueueLimit = rateLimitSettings.GetValue<int>("QueueLimit", 2);
     });
 });
 
