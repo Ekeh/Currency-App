@@ -3,13 +3,14 @@ using System.Security.Claims;
 using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using CurrencyExchangeApp.Core.DTOs.Requests;
 using CurrencyExchangeApp.Core.DTOs.Responses;
 using CurrencyExchangeApp.Infrastructure.Data;
 
-namespace CurrencyExchangeApp.Web.Controllers.Api;
+namespace CurrencyExchangeApp.Controllers.Api;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -107,6 +108,39 @@ public class AuthController : ControllerBase
             FirstName = user.FirstName ?? string.Empty,
             LastName = user.LastName ?? string.Empty
         });
+    }
+
+    /// <summary>
+    /// Returns details of the currently authenticated user
+    /// </summary>
+    [Authorize]
+    [HttpGet("me")]
+    [ProducesResponseType(typeof(UserDetailsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Me()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return NotFound(new { Error = "User not found" });
+        }
+
+        var response = new UserDetailsResponse
+        {
+            UserId = user.Id,
+            Email = user.Email!,
+            FirstName = user.FirstName ?? string.Empty,
+            LastName = user.LastName ?? string.Empty
+        };
+
+        return Ok(response);
     }
 
     private string GenerateJwtToken(ApplicationUser user)
