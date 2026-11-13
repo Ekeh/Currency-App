@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using CurrencyExchangeApp.Core.DTOs.Requests;
 using CurrencyExchangeApp.Core.DTOs.Responses;
 using CurrencyExchangeApp.Core.Interfaces;
@@ -10,6 +11,7 @@ namespace CurrencyExchangeApp.Web.Controllers.Api;
 [Route("api/[controller]")]
 [Produces("application/json")]
 [Authorize]
+[EnableRateLimiting("fixed")]
 public class ExchangeRatesApiController : ControllerBase
 {
     private readonly IExchangeRateService _service;

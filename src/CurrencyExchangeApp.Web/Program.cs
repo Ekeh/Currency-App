@@ -45,7 +45,16 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // Infrastructure: JWT Authentication for API
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var secretKey = jwtSettings["SecretKey"] ?? "YourSuperSecretKeyThatIsAtLeast32CharactersLong!";
+var secretKey = jwtSettings["SecretKey"];
+if (string.IsNullOrWhiteSpace(secretKey)
+    || secretKey.Length < 32
+    || secretKey.StartsWith("YOUR_", StringComparison.OrdinalIgnoreCase))
+{
+    // Fail fast: never sign tokens with a built-in default secret.
+    throw new InvalidOperationException(
+        "Jwt:SecretKey is not configured. Set a random value of at least 32 characters, e.g. " +
+        "`dotnet user-secrets set \"Jwt:SecretKey\" \"<random-32+-chars>\"` or the Jwt__SecretKey environment variable.");
+}
 
 builder.Services.AddAuthentication(options =>
 {
@@ -69,7 +78,7 @@ builder.Services.AddAuthentication(options =>
 // Infrastructure: Rate Limiting
 builder.Services.AddRateLimiter(options =>
 {
-    options.RejectionStatusCode = StatusCodes.Status503ServiceUnavailable;
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     options.AddFixedWindowLimiter("fixed", limiterOptions =>
     {
         var rateLimitSettings = builder.Configuration.GetSection("RateLimiting");

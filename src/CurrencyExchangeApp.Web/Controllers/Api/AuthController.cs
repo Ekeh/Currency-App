@@ -5,6 +5,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using CurrencyExchangeApp.Core.DTOs.Requests;
 using CurrencyExchangeApp.Core.DTOs.Responses;
@@ -15,6 +16,7 @@ namespace CurrencyExchangeApp.Controllers.Api;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
+[EnableRateLimiting("fixed")]
 public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -146,7 +148,8 @@ public class AuthController : ControllerBase
     private string GenerateJwtToken(ApplicationUser user)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
-        var secretKey = jwtSettings["SecretKey"] ?? "YourSuperSecretKeyThatIsAtLeast32CharactersLong!";
+        var secretKey = jwtSettings["SecretKey"]
+            ?? throw new InvalidOperationException("Jwt:SecretKey is not configured.");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
